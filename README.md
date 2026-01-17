@@ -1,6 +1,6 @@
 # 🔄 RingRoute (Project #36)
 
-![Thumbnail](docs/assets/thumbnail.png)
+![RingRoute Dashboard](docs/assets/dashboard-preview.png)
 
 > **High-Performance Distributed Request Router.**  
 > Implements **Consistent Hashing** to route stateful requests to worker nodes with minimal rebalancing.
