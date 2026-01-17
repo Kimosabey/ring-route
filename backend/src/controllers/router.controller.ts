@@ -27,13 +27,13 @@ export class RouterController {
 
     static addNode(req: Request, res: Response) {
         const { id } = req.params;
-        ring.addNode(id);
+        ring.addNode(id as string);
         res.json({ message: `Node ${id} added`, topology_size: ring.getRingTopology().length });
     }
 
     static removeNode(req: Request, res: Response) {
         const { id } = req.params;
-        ring.removeNode(id);
+        ring.removeNode(id as string);
         res.json({ message: `Node ${id} removed` });
     }
 
