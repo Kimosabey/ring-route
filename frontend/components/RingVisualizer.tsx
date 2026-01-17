@@ -77,27 +77,26 @@ export function RingVisualizer({ nodes, lastKey, lastRoutedNode, guideStep = 0 }
                         <stop offset="0%" stopColor="#10b981" stopOpacity="0" />
                         <stop offset="100%" stopColor="#10b981" stopOpacity="1" />
                     </linearGradient>
+                    <marker id="arrow" markerWidth="10" markerHeight="10" refX="5" refY="5" orient="auto">
+                        <path d="M0,0 L10,5 L0,10" fill="#f43f5e" />
+                    </marker>
                 </defs>
 
                 {/* MAIN VISUALIZER GROUP */}
                 <g className={`transition-opacity duration-500 ${isGuide ? 'opacity-30 blur-[1px]' : 'opacity-100'}`}>
 
-                    {/* 1. OUTER ROTATING RING (Dashed) */}
-                    <motion.g
-                        animate={{ rotate: 360 }}
-                        transition={{ duration: 120, repeat: Infinity, ease: "linear" }}
-                        style={{ originX: "50px", originY: "50px" }}
-                    >
-                        <circle
-                            cx="50" cy="50" r="38"
-                            fill="none"
-                            stroke="#10b981"
-                            strokeOpacity="0.3"
-                            strokeWidth="0.2"
-                            strokeDasharray="4 2 1 2"
-                            strokeLinecap="round"
-                        />
-                    </motion.g>
+                    {/* 1. OUTER RING (Fixed Geometry, Moving Dashes) */}
+                    <motion.circle
+                        cx="50" cy="50" r="38"
+                        fill="none"
+                        stroke="#10b981"
+                        strokeOpacity="0.3"
+                        strokeWidth="0.2"
+                        strokeDasharray="4 2 1 2"
+                        strokeLinecap="round"
+                        animate={{ strokeDashoffset: [0, -200] }}
+                        transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
+                    />
 
                     {/* 2. CONNECTION BEAMS */}
                     <AnimatePresence>
@@ -132,9 +131,11 @@ export function RingVisualizer({ nodes, lastKey, lastRoutedNode, guideStep = 0 }
                             const isSelected = lastRoutedNode === n.node;
 
                             // Calculate label position (push outward from center)
-                            const angleRad = (nodeAngles.get(n.node) || 0) * Math.PI / 180;
-                            const labelX = 50 + 44 * Math.cos(angleRad);
-                            const labelY = 50 + 44 * Math.sin(angleRad);
+                            const angle = (nodeAngles.get(n.node) || 0);
+                            const angleRad = angle * Math.PI / 180;
+                            // Push label further out
+                            const labelX = 50 + 46 * Math.cos(angleRad);
+                            const labelY = 50 + 46 * Math.sin(angleRad);
 
                             return (
                                 <motion.g
@@ -174,6 +175,7 @@ export function RingVisualizer({ nodes, lastKey, lastRoutedNode, guideStep = 0 }
                                         textAnchor="middle"
                                         alignmentBaseline="middle"
                                         className={`font-mono transition-opacity duration-300 ${isSelected ? 'opacity-100 font-bold' : 'opacity-60'}`}
+                                        transform={`rotate(0, ${labelX}, ${labelY})`}
                                     >
                                         {n.node}
                                     </text>
@@ -209,6 +211,53 @@ export function RingVisualizer({ nodes, lastKey, lastRoutedNode, guideStep = 0 }
                         </foreignObject>
                     </g>
                 </g>
+
+                {/* GUIDE MODE OVERLAYS */}
+                <AnimatePresence>
+                    {guideStep === 1 && (
+                        <motion.g initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+                            <circle cx="50" cy="50" r="42" fill="none" stroke="#10b981" strokeWidth="0.2" strokeDasharray="2 2" />
+                            <text x="50" y="8" fill="#ecfdf5" fontSize="2.5" fontStyle="italic" textAnchor="middle">0</text>
+                            <text x="50" y="94" fill="#ecfdf5" fontSize="2.5" fontStyle="italic" textAnchor="middle">MAX_HASH</text>
+                            <text x="50" y="48" fill="#34d399" fontSize="6" fontWeight="bold" textAnchor="middle">THE RING</text>
+                            <text x="50" y="55" fill="#10b981" fontSize="2.5" textAnchor="middle">A Continuous Hash Space</text>
+                        </motion.g>
+                    )}
+
+                    {guideStep === 2 && (
+                        <motion.g initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+                            {uniqueNodes.map((n) => {
+                                const pos = getAdjustedPos(n.node, 38);
+                                return (
+                                    <circle key={'guide-' + n.node} cx={pos.x} cy={pos.y} r="4" fill="none" stroke="#fcd34d" strokeWidth="0.3">
+                                        <animate attributeName="r" values="3;5;3" dur="1.5s" repeatCount="indefinite" />
+                                        <animate attributeName="stroke-opacity" values="1;0;1" dur="1.5s" repeatCount="indefinite" />
+                                    </circle>
+                                )
+                            })}
+                            <text x="50" y="48" fill="#fcd34d" fontSize="6" fontWeight="bold" textAnchor="middle">NODES</text>
+                            <text x="50" y="55" fill="#fbbf24" fontSize="2.5" textAnchor="middle">Placed by Hash(IP)</text>
+                        </motion.g>
+                    )}
+
+                    {guideStep === 3 && (
+                        <motion.g initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+                            {/* Example Key */}
+                            <circle cx="20" cy="50" r="1.5" fill="#f43f5e" />
+                            <text x="18" y="51" fill="#f43f5e" fontSize="2.5" textAnchor="end">Key</text>
+
+                            {/* Routing Path (Arc) */}
+                            <defs>
+                                <path id="routePath" d="M 20 50 A 30 30 0 0 1 50 20" />
+                            </defs>
+                            {/* Dashed arrow */}
+                            <path d="M 22 48 Q 25 35 35 25" fill="none" stroke="#f43f5e" strokeWidth="0.4" strokeDasharray="2 2" markerEnd="url(#arrow)" />
+
+                            <text x="50" y="48" fill="#f43f5e" fontSize="6" fontWeight="bold" textAnchor="middle">ROUTING</text>
+                            <text x="50" y="55" fill="#fb7185" fontSize="2.5" textAnchor="middle">Clockwise to Next Node</text>
+                        </motion.g>
+                    )}
+                </AnimatePresence>
             </svg>
         </div>
     );
