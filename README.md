@@ -1,81 +1,89 @@
-# 🔄 RingRoute (Project #36)
+# RingRoute
 
-![RingRoute Dashboard](docs/assets/dashboard-preview.png)
+![Dashboard](docs/assets/dashboard-preview.png)
 
-> **High-Performance Distributed Request Router.**  
-> Implements **Consistent Hashing** to route stateful requests to worker nodes with minimal rebalancing.
+## Distributed Request Router (Consistent Hashing)
+
+<div align="center">
 
 ![Status](https://img.shields.io/badge/Status-Active_Development-orange?style=for-the-badge)
-![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
+![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)
+![Algorthm](https://img.shields.io/badge/Algo-Consistent_Hashing-purple?style=for-the-badge)
+
+</div>
+
+**RingRoute** is a specialized Load Balancer designed for **Stateful Distributed Systems**. It implements a **Consistent Hashing Ring** with Virtual Nodes to ensure that requests for specific entities (Users, Sessions, Data Shards) sticky-route to the same worker node, minimizing cache misses during scaling events.
 
 ---
 
-## 📖 Overview
+## 🚀 Quick Start
 
-**RingRoute** is a specialized Load Balancer designed for distributed systems where "State" matters. Unlike traditional Round-Robin balancers, it ensures that requests for the same entity (User, Device, or Session) consistently land on the same worker node—even as the cluster scales up or down.
+Run the full stack (Router + Visualizer):
 
-### 🚀 Key Features
-- **Consistent Hashing Ring**: Logic that minimizes key redistribution during scaling events.
-- **Virtual Nodes (vNodes)**: Probabilistically balanced load distribution across heterogeneous physical hardware.
-- **Node Management**: Dynamic REST API to add/remove worker nodes on the fly.
-- **Real-time Topology**: Live inspection of the ring's logical structure and hash distribution.
-- **Vignette Routing**: Optimized for systems like Gaming Servers or Notification Hubs.
+```bash
+# 1. Start Backend (The Hash Ring)
+cd backend && npm run dev
+
+# 2. Start Frontend (The Dashboard)
+cd frontend && npm run dev
+```
+
+> **Setup Guide**: See [GETTING_STARTED.md](./docs/GETTING_STARTED.md).
 
 ---
 
-## 🏗️ Architecture
+## 📸 Demo & Architecture
 
+### The Hash Ring
 ![Architecture](docs/assets/architecture.png)
+*Topology: Users mapped to the nearest Clockwise Node on a 32-bit Ring.*
 
-The system works on a **Logical Ring** representing a 32-bit hash space.
-1.  **Node Mapping**: Physical nodes are hashed multiple times (Virtual Nodes) to ensure uniform coverage.
-2.  **Key Lookup**: Incoming request keys are hashed and mapped to the "closest" node on the ring clockwise.
-3.  **Stability**: Adding a new node only requires re-mapping ~`1/N` of keys, compared to `(N-1)/N` in standard modulo hashing.
+### Scaling Logic
+If a node is added, only `1/N` keys are moved. In traditional Modulo Hashing (`% N`), `N-1/N` keys would move, invalidating nearly all caches.
+
+> **Deep Dive**: See [ARCHITECTURE.md](./docs/ARCHITECTURE.md) for the "Virtual Node" strategy.
 
 ---
 
-## 🛠️ Tech Stack
+## ✨ Key Features
 
-| Layer | Technology | Role |
+*   **🔄 Consistent Hashing**: Minimizes key churn during cluster resizing.
+*   **⚖️ Virtual Nodes**: Prevents "Hotspots" by distributing single nodes across multiple ring positions.
+*   **📊 Viz Dashboard**: Real-time rendering of the Hash Topology using D3/Canvas.
+*   **🏎️ Performance**: `O(log N)` lookup time using Binary Search on the sorted Ring.
+
+---
+
+## 📚 Documentation
+
+| Document | Description |
+| :--- | :--- |
+| [**System Architecture**](./docs/ARCHITECTURE.md) | High Level Design and Hashing Algorithms. |
+| [**Getting Started**](./docs/GETTING_STARTED.md) | API Usage and Dashboard Setup. |
+| [**Failure Scenarios**](./docs/FAILURE_SCENARIOS.md) | Handling "Thundering Herd" and Node crashes. |
+| [**Interview Q&A**](./docs/INTERVIEW_QA.md) | "Why Virtual Nodes?" and "Hash Collisions". |
+
+---
+
+## 🔧 Tech Stack
+
+| Component | Technology | Role |
 | :--- | :--- | :--- |
-| **Backend Engine** | Node.js (TypeScript) | Core routing and algorithm implementation. |
-| **API Layer** | Express.js | Management API for node orchestration. |
-| **Frontend** | Next.js 14+ | Real-time visual topology dashboard. |
-| **Hashing** | DJB2 / xxHash | High-speed, low-collision distribution. |
-
----
-
-## 🚥 Quick Start
-
-### 1. Start the Backend
-```bash
-cd backend
-npm install
-npm run dev
-```
-
-### 2. Route a Request
-```bash
-curl "http://localhost:3001/api/route?key=user123"
-```
-
-### 3. Manage Nodes
-```bash
-# Add a new node
-curl -X POST "http://localhost:3001/api/nodes/worker-99"
-
-# View Ring Topology
-curl "http://localhost:3001/api/topology"
-```
-
----
-
-## 💎 Senior Signal
-**"Why does this matter?"**
-In stateful systems (like a chat application where users are connected via WebSockets), if a load balancer moves a user to a different server, the connection breaks. **RingRoute** provides "Sticky Routing" without the overhead of central session stores, enabling massive horizontal scalability with minimal disruption.
+| **Algorithm** | **Node.js (TS)** | Hash Ring Logic. |
+| **API** | **Express** | HTTP Routing. |
+| **UI** | **Next.js 14** | Topology Visualization. |
+| **Hash** | **MurmurHash** | Distribution Function. |
 
 ---
 
 ## 👤 Author
-**Harshan Aiyappa** - *Senior Hybrid Cloud Engineer*  
-[GitHub](https://github.com/Kimosabey) | [LinkedIn](https://linkedin.com/in/harshan-aiyappa)
+
+**Harshan Aiyappa**  
+Senior Full-Stack Hybrid Engineer  
+[GitHub Profile](https://github.com/Kimosabey)
+
+---
+
+## 📝 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
