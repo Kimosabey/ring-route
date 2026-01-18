@@ -5,6 +5,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/kimosabey/ring-route/core"
 )
 
@@ -22,7 +23,13 @@ func main() {
 		AppName: "RingRoute Go-Fiber Engine",
 	})
 
-	app.Use(cors.New())
+	app.Use(logger.New())
+
+	app.Use(cors.New(cors.Config{
+		AllowOrigins: "*",
+		AllowHeaders: "Origin, Content-Type, Accept, Authorization",
+		AllowMethods: "GET, POST, DELETE, OPTIONS, PUT",
+	}))
 
 	api := app.Group("/api")
 

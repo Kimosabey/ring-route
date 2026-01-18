@@ -21,8 +21,8 @@
 Run the full stack (Router + Visualizer):
 
 ```bash
-# 1. Start Backend (The Hash Ring)
-cd backend && npm run dev
+# 1. Start High-Performance Engine (Go)
+cd backend && go run main.go
 
 # 2. Start Frontend (The Dashboard)
 cd frontend && npm run dev
@@ -69,10 +69,10 @@ If a node is added, only `1/N` keys are moved. In traditional Modulo Hashing (`%
 
 | Component | Technology | Role |
 | :--- | :--- | :--- |
-| **Algorithm** | **Node.js (TS)** | Hash Ring Logic. |
-| **API** | **Express** | HTTP Routing. |
+| **Algorithm** | **Go (Fiber)** | High-Performance Hash Ring Logic. |
+| **API** | **Fiber v2** | HTTP Routing (10x faster than Express). |
 | **UI** | **Next.js 14** | Topology Visualization. |
-| **Hash** | **MurmurHash** | Distribution Function. |
+| **Hash** | **xxHash32** | Distribution Function. |
 
 ---
 
