@@ -22,7 +22,7 @@ export default function Home() {
   // Fetch Topology
   const fetchTopology = async () => {
     try {
-      const data = await fetch("http://localhost:3001/api/topology").then(r => r.json());
+      const data = await fetch("http://127.0.0.1:3002/api/topology").then(r => r.json());
       setTopology(data);
     } catch (e) { console.error(e) }
   };
@@ -30,7 +30,7 @@ export default function Home() {
   useEffect(() => {
     const init = async () => {
       try {
-        const res = await fetch("http://localhost:3001/api/topology");
+        const res = await fetch("http://127.0.0.1:3002/api/topology");
         if (res.ok) setTopology(await res.json());
       } catch (e) { console.error("API Error", e) }
     }
@@ -45,7 +45,7 @@ export default function Home() {
     setLoading(true);
     addLog(`CMD: Adding Node '${id}'...`);
     await new Promise(r => setTimeout(r, 500));
-    await fetch(`http://localhost:3001/api/nodes/${id}`, { method: "POST" });
+    await fetch(`http://127.0.0.1:3002/api/nodes/${id}`, { method: "POST" });
     addLog(`SUCCESS: Node '${id}' joined the ring.`);
     addLog(`INFO: Virtual nodes redistributed.`);
     await fetchTopology();
@@ -55,7 +55,7 @@ export default function Home() {
   const handleRemoveNode = async (id: string) => {
     setLoading(true);
     addLog(`CMD: Removing Node '${id}'...`);
-    await fetch(`http://localhost:3001/api/nodes/${id}`, { method: "DELETE" });
+    await fetch(`http://127.0.0.1:3002/api/nodes/${id}`, { method: "DELETE" });
     addLog(`SUCCESS: Node '${id}' terminated.`);
     addLog(`INFO: Keys re-balanced to remaining nodes.`);
     await fetchTopology();
@@ -70,7 +70,7 @@ export default function Home() {
     await new Promise(r => setTimeout(r, 300));
     addLog(`HASH: '${key}' -> [Calculating 32-bit Hash]...`);
 
-    const res = await fetch(`http://localhost:3001/api/route?key=${key}`).then(r => r.json());
+    const res = await fetch(`http://127.0.0.1:3002/api/route?key=${key}`).then(r => r.json());
 
     await new Promise(r => setTimeout(r, 300));
     addLog(`LOOKUP: Searching ring clockwise...`);

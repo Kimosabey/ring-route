@@ -1,7 +1,10 @@
+import XXH from 'xxhashjs';
+
 export class ConsistentHashRing {
     private readonly virtualNodeCount: number;
     private readonly ring: Map<number, string>;
     private sortedKeys: number[];
+    private readonly seed = 0xABCD;
 
     constructor(virtualNodes: number = 100) {
         this.virtualNodeCount = virtualNodes;
@@ -9,13 +12,8 @@ export class ConsistentHashRing {
         this.sortedKeys = [];
     }
 
-    // DJB2 Hash Function
     private hashString(key: string): number {
-        let hash = 5381;
-        for (let i = 0; i < key.length; i++) {
-            hash = ((hash << 5) + hash) + key.charCodeAt(i);
-        }
-        return hash >>> 0;
+        return XXH.h32(key, this.seed).toNumber();
     }
 
     public addNode(node: string): void {

@@ -11,6 +11,6 @@ app.use('/api', routerRoutes);
 
 app.get('/health', (req, res) => res.send('RingRoute Backend is Healthy'));
 
-app.listen(PORT, () => {
-    console.log(`🚀 RingRoute Backend running on http://localhost:${PORT}`);
+app.listen(Number(PORT), '0.0.0.0', () => {
+    console.log(`🚀 RingRoute Backend running on http://127.0.0.1:${PORT}`);
 });
