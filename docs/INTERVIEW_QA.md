@@ -1,4 +1,4 @@
-# 🎤 Interview Cheat Sheet: RingRoute
+# 🎓 Interview Q&A: RingRoute
 
 ## 1. The Elevator Pitch (2 Minutes)
 

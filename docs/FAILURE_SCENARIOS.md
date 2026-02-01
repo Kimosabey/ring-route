@@ -1,8 +1,12 @@
-# 🛡️ Failure Scenarios & Resilience
+# 🛡️ Failure Scenarios & Resilience: RingRoute
 
 > "In Distributed Systems, nodes die. The Router must survive."
 
 This document details how RingRoute handles node crashes and skewed traffic.
+
+![Workflow](./assets/workflow.png)
+
+---
 
 ## 1. Failure Matrix
 

@@ -1,8 +1,10 @@
-# 🏗️ System Architecture
+# 🏗️ System Architecture: RingRoute
 
 ## 1. High-Level Design (HLD)
 
 RingRoute is a **Layer 7 Application Router** designed for stateful distributed systems. It acts as a "Smart Load Balancer" that guarantees **Sticky Sessions** via **Consistent Hashing**, ensuring that requests for a specific entity (e.g., User ID, Game Session) always land on the same worker node, even as the cluster scales.
+
+![Architecture](./assets/architecture.png)
 
 ```mermaid
 graph TD

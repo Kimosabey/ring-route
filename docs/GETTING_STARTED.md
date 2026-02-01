@@ -1,8 +1,12 @@
-# 🚀 Getting Started with RingRoute
+# 🚀 Getting Started: RingRoute
 
 > **Prerequisites**
 > *   **Node.js v18+**
 > *   **npm**
+
+![Dashboard Preview](./assets/dashboard.png)
+
+---
 
 ## 1. Environment Setup
 
